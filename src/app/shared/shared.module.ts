@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    // PageNotFoundComponent,
+    PageNotFoundComponent,
     //  WebviewDirective
     ],
   imports: [CommonModule, TranslateModule, FormsModule],

@@ -30,7 +30,7 @@ const frontendHost =
 @Component({
   selector: 'app-mouse-electron-jiggler',
   standalone: false,
-  template: `hello niggers`,
+  template: `<app-root-jiggler/>`,
   styles: [
     `
       body, html {

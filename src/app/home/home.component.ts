@@ -11,7 +11,6 @@ import { ElectronService } from '../core/services';
 export class HomeComponent implements OnInit {
   height = window.innerHeight;
   width = window.innerWidth;
-  niga = ''
   get ipcRenderer() {
     return this.electronService.ipcRenderer;
   }
@@ -34,6 +33,6 @@ export class HomeComponent implements OnInit {
     this.jigglerEnable = !this.jigglerEnable;
     // // this.electronService.ipcRenderer.send('jiggle', 'helolas');
     // console.log(this.ipcRenderer.sendSync('set-title', this.niga))
-    this.ipcRenderer.send('set-title', this.niga)
+    this.ipcRenderer.send('set-title', 'hello');
   }
 }

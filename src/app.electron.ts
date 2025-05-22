@@ -28,6 +28,14 @@ const serve = args.some(val => val === '--serve');
 const websql = args.some(val => val === '--websql');
 let jigger = false;
 
+const wait = (milisecond = 1000) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(undefined);
+    }, milisecond)
+  });
+};
+
 async function jiggerStartFn() {
   // // Speed up the mouse.
   let size: Electron.Size = undefined as any;
@@ -36,11 +44,12 @@ async function jiggerStartFn() {
   let height: number = undefined as any;
   let width: number = undefined as any;
 
+
   const calculate = () => {
     size = screen.getPrimaryDisplay().size;
     const scale = screen.getPrimaryDisplay().scaleFactor;
     twoPI = Math.PI * 2.0;
-    height = Math.floor(size.height * scale) / 2 - 10;
+    height = ( Math.floor( size.height * scale) / 2) - 10;
     width = Math.floor(size.width * scale);
   };
   while (true) {
@@ -48,11 +57,12 @@ async function jiggerStartFn() {
     for (var x = 0; x < width; x++) {
       const y = height * Math.sin((twoPI * x) / width) + height;
       // robot.moveMouse(x, y);
+      // robot.moveMouse(x, y);
       if (jigger) {
         mouse.move([new Point(x, y)]);
-        await UtilsTerminal.wait(3);
+        await wait(3);
       } else {
-        await UtilsTerminal.wait(1000);
+        await wait(1000);
         calculate();
       }
     }
@@ -80,7 +90,6 @@ function createWindow(): BrowserWindow {
     debug();
     win.webContents.openDevTools();
 
-    require('electron-reloader')(module);
     win.loadURL(
       'http://localhost:' +
         (websql ? CLIENT_DEV_WEBSQL_APP_PORT : CLIENT_DEV_NORMAL_APP_PORT),
@@ -106,22 +115,22 @@ function createWindow(): BrowserWindow {
     win = null;
   });
 
-  // ipcMain.on('set-title', (event, title) => {
-  //   jigger = !jigger;
-  //   // const webContents = event.sender
-  //   // const win = BrowserWindow.fromWebContents(webContents)
-  //   // win!.setTitle(title)
-  //   // mouse.move([new Point(500, 500)]);
-  //   // jiggerStartFn();
-  //   event.returnValue = 'pizda';
-  // });
-  // jiggerStartFn();
+  ipcMain.on('set-title', (event, title) => {
+    jigger = !jigger;
+    // const webContents = event.sender
+    // const win = BrowserWindow.fromWebContents(webContents)
+    // win!.setTitle(title)
+    // mouse.move([new Point(500, 500)]);
+    // jiggerStartFn();
+    event.returnValue = 'asds';
+  });
+  jiggerStartFn();
 
   return win;
 }
 
 async function startElectron() {
-  // await start();
+  await start();
   try {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
