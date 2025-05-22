@@ -143,5 +143,10 @@
     "**/index.js": true,
     "**/index.d.ts": true,
     "**/index.js.map": true
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#b49a98",
+    "statusBar.background": "#258150",
+    "statusBar.debuggingBackground": "#b49a98"
   }
 }

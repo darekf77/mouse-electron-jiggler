@@ -10,6 +10,7 @@ import { Observable, map } from 'rxjs';
 import { Taon, BaseContext, TAON_CONTEXT } from 'taon/src';
 import { Helpers, UtilsOs } from 'tnp-core/src';
 
+import { AppModule } from './app/app.module'; // @browser
 import {
   HOST_BACKEND_PORT,
   CLIENT_DEV_WEBSQL_APP_PORT,
@@ -18,7 +19,7 @@ import {
 //#endregion
 
 console.log('hello world');
-console.log('Your server will start on port '+ HOST_BACKEND_PORT);
+console.log('Your server will start on port ' + HOST_BACKEND_PORT);
 const host = 'http://localhost:' + HOST_BACKEND_PORT;
 const frontendHost =
   'http://localhost:' +
@@ -29,37 +30,22 @@ const frontendHost =
 @Component({
   selector: 'app-mouse-electron-jiggler',
   standalone: false,
-  template: `hello from mouse-electron-jiggler<br>
-    Angular version: {{ angularVersion }}<br>
-    <br>
-    users from backend
-    <ul>
-      <li *ngFor="let user of (users$ | async)"> {{ user | json }} </li>
-    </ul>
-  `,
-  styles: [` body { margin: 0px !important; } `],
+  template: `hello niggers`,
+  styles: [
+    `
+      body, html {
+        margin: 0px !important;
+      }
+      app-root-jiggler {
+        display: block;
+      }
+    `,
+  ],
 })
 export class MouseElectronJigglerComponent {
-  angularVersion = VERSION.full + ` mode: ${UtilsOs.isRunningInWebSQL() ? ' (websql)' : '(normal)'}`;
-  userApiService = inject(UserApiService);
-  readonly users$: Observable<User[]> = this.userApiService.getAll();
-}
-//#endregion
-//#endregion
-
-//#region  mouse-electron-jiggler api service
-//#region @browser
-@Injectable({
-  providedIn:'root'
-})
-export class UserApiService {
-  userController = Taon.inject(()=> MainContext.getClass(UserController))
-  getAll() {
-    return this.userController.getAll()
-      .received
-      .observable
-      .pipe(map(r => r.body.json));
-  }
+  angularVersion =
+    VERSION.full +
+    ` mode: ${UtilsOs.isRunningInWebSQL() ? ' (websql)' : '(normal)'}`;
 }
 //#endregion
 //#endregion
@@ -68,90 +54,29 @@ export class UserApiService {
 //#region @browser
 @NgModule({
   providers: [
-    {
-      provide: TAON_CONTEXT,
-      useValue: MainContext,
-    },
-    providePrimeNG({ // inited ng prime - remove if not needed
+    providePrimeNG({
+      // inited ng prime - remove if not needed
       theme: {
-        preset: Aura
-      }
-    })
+        preset: Aura,
+      },
+    }),
   ],
   exports: [MouseElectronJigglerComponent],
   imports: [
+    AppModule,
     CommonModule,
-    MaterialCssVarsModule.forRoot({  // inited angular material - remove if not needed
+    MaterialCssVarsModule.forRoot({
+      // inited angular material - remove if not needed
       primary: '#4758b8',
       accent: '#fedfdd',
-   }),
+    }),
   ],
   declarations: [MouseElectronJigglerComponent],
 })
-export class MouseElectronJigglerModule { }
+export class MouseElectronJigglerModule {}
 //#endregion
 //#endregion
 
-//#region  mouse-electron-jiggler entity
-@Taon.Entity({ className: 'User' })
-class User extends Taon.Base.AbstractEntity {
-  //#region @websql
-  @Taon.Orm.Column.String()
-  //#endregion
-  name?: string;
-}
-//#endregion
-
-//#region  mouse-electron-jiggler controller
-@Taon.Controller({ className: 'UserController' })
-class UserController extends Taon.Base.CrudController<User> {
-  entityClassResolveFn = ()=> User;
-  //#region @websql
-  /**
-   * @deprecated use migrations instead
-   */
-  async initExampleDbData(): Promise<void> {
-    const superAdmin = new User();
-    superAdmin.name = 'super-admin';
-    await this.db.save(superAdmin);
-  }
-  //#endregion
-}
-//#endregion
-
-//#region  mouse-electron-jiggler context
-var MainContext = Taon.createContext(()=>({
-  host,
-  frontendHost,
-  contextName: 'MainContext',
-  contexts:{ BaseContext },
-  migrations: {
-    // PUT TAON MIGRATIONS HERE
-  },
-  controllers: {
-    UserController,
-    // PUT TAON CONTROLLERS HERE
-  },
-  entities: {
-    User,
-    // PUT TAON ENTITIES HERE
-  },
-  database: true,
-  // disabledRealtime: true,
-}));
-//#endregion
-
-async function start() {
-
-  await MainContext.initialize();
-
-  if (Taon.isBrowser) {
-    const users = (await MainContext.getClassInstance(UserController).getAll().received)
-      .body?.json;
-    console.log({
-      'users from backend': users,
-    });
-  }
-}
+async function start() {}
 
 export default start;
