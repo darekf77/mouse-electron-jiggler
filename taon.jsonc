@@ -2,6 +2,13 @@
   "type": "isomorphic-lib",
   "version": "v19",
 
+  "autoReleaseConfigAllowedItems": [
+    {
+      "artifactName": "electron-app",
+      "releaseType": "local",
+    }
+  ],
+
   "packageJsonOverride": {
     "author": "Dariusz Filipiak",
     "private": true,
