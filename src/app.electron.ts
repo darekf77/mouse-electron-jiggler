@@ -17,9 +17,7 @@ import { path, fse, UtilsProcess, UtilsOs, UtilsTerminal } from 'tnp-core/src';
 // import * as fse from 'fs';
 
 import start from './app';
-import {
-  FRONTEND_HOST_URL_ELECTRON
-} from './app.hosts';
+import { FRONTEND_HOST_URL_ELECTRON } from './app.hosts';
 
 let win: BrowserWindow | null = null;
 const args = process.argv.slice(1);
@@ -30,7 +28,7 @@ const wait = (milisecond = 1000) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(undefined);
-    }, milisecond)
+    }, milisecond);
   });
 };
 
@@ -42,12 +40,11 @@ async function jiggerStartFn() {
   let height: number = undefined as any;
   let width: number = undefined as any;
 
-
   const calculate = () => {
     size = screen.getPrimaryDisplay().size;
     const scale = screen.getPrimaryDisplay().scaleFactor;
     twoPI = Math.PI * 2.0;
-    height = ( Math.floor( size.height * scale) / 2) - 10;
+    height = Math.floor(size.height * scale) / 2 - 10;
     width = Math.floor(size.width * scale);
   };
   while (true) {
@@ -82,6 +79,9 @@ function createWindow(): BrowserWindow {
       contextIsolation: false,
     },
   });
+
+  // @ts-ignore
+  console.log(ENV);
 
   if (serve) {
     const debug = require('electron-debug');

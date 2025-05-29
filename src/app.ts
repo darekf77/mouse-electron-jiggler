@@ -30,10 +30,11 @@ const frontendHost =
 @Component({
   selector: 'app-mouse-electron-jiggler',
   standalone: false,
-  template: `<app-root-jiggler/>`,
+  template: `<app-root-jiggler />`,
   styles: [
     `
-      body, html {
+      body,
+      html {
         margin: 0px !important;
       }
       app-root-jiggler {
@@ -77,6 +78,11 @@ export class MouseElectronJigglerModule {}
 //#endregion
 //#endregion
 
-async function start() {}
+async function start() {
+  //#region @backend
+  // @ts-ignore
+  // console.log(global.ENV);
+  //#endregion
+}
 
 export default start;
