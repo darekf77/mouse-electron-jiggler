@@ -6,5 +6,9 @@ const env: Partial<EnvOptions> = {
   build: {
     ...baseEnv.build,
   },
+  paths: {
+    googleApiKey: 'test-key',
+    googleMapsApiKey: 'test-maps-key',
+  }
 };
 export default env;
