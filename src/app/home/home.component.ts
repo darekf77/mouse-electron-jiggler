@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
       return this.electronService.ipcRenderer;
     }
   }
-  jigglerEnable = false;
+  jigglerEnabled = false;
 
   constructor(
     private router: Router,
@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit {
 
   toogleEnable() {
     console.log('TOOGLE');
-    this.jigglerEnable = !this.jigglerEnable;
+    this.jigglerEnabled = !this.jigglerEnabled;
     if (UtilsOs.isElectron) {
       this.ipcRenderer.send('set-title', 'hello');
     }

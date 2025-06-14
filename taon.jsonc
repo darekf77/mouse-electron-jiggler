@@ -1,11 +1,12 @@
 {
   "type": "isomorphic-lib",
   "version": "v19",
+  "appId": "com.domain.example.mouse-electron-jiggler",
 
   "packageJsonOverride": {
     "author": "Dariusz Filipiak",
+    "description": "Description for mouse-electron-jiggler. Hello world!",
     "private": true,
-
     "scripts": {}
   }
 }
