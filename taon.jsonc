@@ -3,10 +3,12 @@
   "version": "v19",
   "appId": "com.domain.example.mouse-electron-jiggler",
 
+  "electronNativeDependencies": ["@nut-tree-fork/nut-js"],
+
   "packageJsonOverride": {
     "author": "Dariusz Filipiak",
     "description": "Description for mouse-electron-jiggler. Hello world!",
     "private": true,
-    "scripts": {}
-  }
+    "scripts": {},
+  },
 }
