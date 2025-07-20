@@ -3,7 +3,14 @@
   "version": "v19",
   "appId": "com.domain.example.mouse-electron-jiggler",
 
-  "electronNativeDependencies": ["@nut-tree-fork/nut-js"],
+  "singleFileBundlingPackages": [
+    {
+      "description": "This package is used for mouse and keyboard automation in Electron applications.",
+      "includeInBundleNodeModules": ["electron-app"],
+      "isExternalFor": ["electron-app"],
+      "packageName": "@nut-tree-fork/nut-js",
+    },
+  ],
 
   "packageJsonOverride": {
     "author": "Dariusz Filipiak",
