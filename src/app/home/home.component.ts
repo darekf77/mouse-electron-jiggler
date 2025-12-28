@@ -1,44 +1,56 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+//#region imports
+import { sign } from 'crypto';
+
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  DestroyRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilsOs } from 'tnp-core/src';
 
+import { JigglerApiService } from '../jiggler';
+
 import { ElectronService } from './electron.service';
+//#endregion
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  standalone: false,
+  imports: [CommonModule, FormsModule],
+  providers: [JigglerApiService],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
+  private destroyRef = inject(DestroyRef);
+
+  jigglerApiService = inject(JigglerApiService);
+
   height = window.innerHeight;
+
   width = window.innerWidth;
-  get ipcRenderer() {
-    if (UtilsOs.isElectron) {
-      return this.electronService.ipcRenderer;
+
+  jigglerEnabled = signal<boolean>(false);
+
+  private processing = false;
+
+  toogleEnable(): void {
+    if (this.processing) {
+      return;
     }
-  }
-  jigglerEnabled = false;
-
-  constructor(
-    private router: Router,
-    private electronService: ElectronService,
-  ) {}
-
-  ngOnInit(): void {
-    console.log('HomeComponent INIT');
-    if (UtilsOs.isElectron) {
-      this.electronService.ipcRenderer.on('loggg', (event, data) => {
-        console.log('hello');
+    this.processing = true;
+    this.jigglerApiService
+      .enableToggle()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(enabled => {
+        this.jigglerEnabled.set(enabled);
+        this.processing = false;
       });
-    }
-  }
-
-  toogleEnable() {
-    console.log('TOOGLE');
-    this.jigglerEnabled = !this.jigglerEnabled;
-    if (UtilsOs.isElectron) {
-      this.ipcRenderer.send('set-title', 'hello');
-    }
   }
 }

@@ -1,67 +1,14 @@
-import {
-  mouse,
-  // singleWord,
-  // sleep,
-  // useConsoleLogger,
-  // ConsoleLogLevel,
-  // straightTo,
-  // centerOf,
-  // Button,
-  // getActiveWindow,
-  Point,
-} from '@nut-tree-fork/nut-js';
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
-import { path, fse, UtilsProcess, UtilsOs, UtilsTerminal } from 'tnp-core/src';
-// import * as path from 'path';
-// import * as fse from 'fs';
+//#region @notForNpm
+import { app, BrowserWindow, screen } from 'electron';
+import { path, fse } from 'tnp-core/src';
 
 import start from './app';
 import { FRONTEND_HOST_URL_ELECTRON } from './app.hosts';
+import { ENV_ELECTRON_APP_BUILD_ANGULAR_PROD } from './lib/env';
 
 let win: BrowserWindow | null = null;
 const args = process.argv.slice(1);
 const serve = args.some(val => val === '--serve');
-let jigger = false;
-
-const wait = (milisecond = 1000) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(undefined);
-    }, milisecond);
-  });
-};
-
-async function jiggerStartFn() {
-  // // Speed up the mouse.
-  let size: Electron.Size = undefined as any;
-
-  let twoPI: number = undefined as any;
-  let height: number = undefined as any;
-  let width: number = undefined as any;
-
-  const calculate = () => {
-    size = screen.getPrimaryDisplay().size;
-    const scale = screen.getPrimaryDisplay().scaleFactor;
-    twoPI = Math.PI * 2.0;
-    height = Math.floor(size.height * scale) / 2 - 10;
-    width = Math.floor(size.width * scale);
-  };
-  while (true) {
-    calculate();
-    for (var x = 0; x < width; x++) {
-      const y = height * Math.sin((twoPI * x) / width) + height;
-      // robot.moveMouse(x, y);
-      // robot.moveMouse(x, y);
-      if (jigger) {
-        mouse.move([new Point(x, y)]);
-        await wait(3);
-      } else {
-        await wait(1000);
-        calculate();
-      }
-    }
-  }
-}
 
 function createWindow(): BrowserWindow {
   const size = screen.getPrimaryDisplay().workAreaSize;
@@ -70,23 +17,28 @@ function createWindow(): BrowserWindow {
   win = new BrowserWindow({
     x: 0,
     y: 0,
+    autoHideMenuBar: true,
     width: size.width,
     height: size.height,
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: serve,
       contextIsolation: false,
+      webSecurity: !serve,
     },
   });
-
-  // @ts-ignore
-  // console.log(ENV);
 
   if (serve) {
     const debug = require('electron-debug');
     debug();
     win.webContents.openDevTools();
 
+    // TODO electron-reloader causes memory leaks and high CPU usage
+    // doNOTrequire('electron-reloader')(module); // this hangs frontend randomly
+    // import('electron-reloader').then(reloader => {
+    //   const reloaderFn = (reloader as any).default || reloader;
+    //   reloaderFn(module);
+    // });
     win.loadURL(FRONTEND_HOST_URL_ELECTRON);
   } else {
     // Path when running electron executable
@@ -99,6 +51,11 @@ function createWindow(): BrowserWindow {
 
     const url = new URL(path.join('file:', __dirname, pathIndex));
     win.loadURL(url.href);
+
+    if (!ENV_ELECTRON_APP_BUILD_ANGULAR_PROD) {
+      // Open the DevTools.
+      win.webContents.openDevTools();
+    }
   }
 
   // Emitted when the window is closed.
@@ -108,17 +65,6 @@ function createWindow(): BrowserWindow {
     // when you should delete the corresponding element.
     win = null;
   });
-
-  ipcMain.on('set-title', (event, title) => {
-    jigger = !jigger;
-    // const webContents = event.sender
-    // const win = BrowserWindow.fromWebContents(webContents)
-    // win!.setTitle(title)
-    // mouse.move([new Point(500, 500)]);
-    // jiggerStartFn();
-    event.returnValue = 'asds';
-  });
-  jiggerStartFn();
 
   return win;
 }
@@ -130,7 +76,6 @@ async function startElectron() {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
-    // app.on('ready', () => setTimeout(createWindow, 400));
     app.on('ready', () => setTimeout(createWindow, 400));
 
     // Quit when all windows are closed.
@@ -156,4 +101,4 @@ async function startElectron() {
 }
 
 startElectron();
-
+//#endregion

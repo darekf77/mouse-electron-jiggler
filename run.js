@@ -1,19 +1,24 @@
 const process= require('process');
 process.removeAllListeners('warning');
-const vm = require('vm');
 const path = require('path');
-const _ = require('lodash');
 const fse = require('fs-extra');
 
 const argsMinimist = require('minimist')(process.argv);
 
 const pathToDist = path.join(process.cwd(), 'dist');
-const pathToDistApp = path.join(pathToDist, 'app.js');
-const RELATIVEPATHoverride = argsMinimist.RELATIVEPATHoverride;
 
-var sandbox = {
-  require,
-  global
+const pathToDistApp = path.join(pathToDist, 'app.js');
+
+try {
+  fse.ensureDirSync(path.join(process.cwd(), 'databases'));
+} catch (error) {
+
+}
+
+try {
+  fse.ensureDirSync(path.join(process.cwd(), 'routes'));
+} catch (error) {
+
 }
 
 const encoding = 'utf8';
@@ -28,47 +33,39 @@ function emptyDistFolder() {
   );
 }
 
-if (!RELATIVEPATHoverride || RELATIVEPATHoverride.trim().length === 0) {
-  var messageWasShown = false;
-  while (emptyDistFolder()) {
-    var seconds = 2;
-    if (!messageWasShown) {
-      messageWasShown = true;
-      console.log(`Waiting for build process...`);
-    }
-    var waitTill = new Date(new Date().getTime() + seconds * 1000);
-    while (waitTill > new Date()) { }
-  }
-  if (messageWasShown) {
-    var waitTill = new Date(new Date().getTime() + secondsWaitAfterDistDetected * 1000);
-    while (waitTill > new Date()) { }
-  }
-}
 
+var messageWasShown = false;
+while (emptyDistFolder()) {
+  var seconds = 2;
+  if (!messageWasShown) {
+    messageWasShown = true;
+    console.log(`Waiting for build process...`);
+  }
+  var waitTill = new Date(new Date().getTime() + seconds * 1000);
+  while (waitTill > new Date()) { }
+}
+if (messageWasShown) {
+  var waitTill = new Date(new Date().getTime() + secondsWaitAfterDistDetected * 1000);
+  while (waitTill > new Date()) { }
+}
 
 const PROJECT_NPM_NAME = require('./dist/lib/build-info._auto-generated_.js').PROJECT_NPM_NAME;
-console.log({PROJECT_NPM_NAME})
-let relativePath = './tmp-local-copyto-proj-dist/node_modules/' + PROJECT_NPM_NAME  + '/app';
+console.log({PROJECT_NPM_NAME});
 
+var app = require('./dist/app').default;
+var ContextsEndpointStorageInstance = globalThis['$$$ContextsEndpointStorage$$$'];
 
-if (RELATIVEPATHoverride) {
-  relativePath = RELATIVEPATHoverride.replace(/\.js$/, '')
-}
-if (relativePath.startsWith('/')) {
-  relativePath = `.${relativePath}`;
-}
-if (!relativePath.startsWith('./')) {
-  relativePath = `./${relativePath}`;
-}
-
-const script = new vm.Script(`
-var app = require("${relativePath}").default;
 app({
-   onlyMigrationRun: ${argsMinimist.onlyMigrationRun},
-   onlyMigrationRevertToTimestamp: ${argsMinimist.onlyMigrationRevertToTimestamp},
-   args: [${process.argv.slice(2).map(c => `"${c}"`).join(',')}]
+   onlyMigrationRun: argsMinimist.onlyMigrationRun,
+   onlyMigrationRevertToTimestamp: argsMinimist.onlyMigrationRevertToTimestamp,
+   args: [process.argv.slice(2).map(c => `"${c}"`).join(',')]
+}).then(async () => {
+  const endpoints = ContextsEndpointStorageInstance.arr || [];
+  await Promise.all(endpoints.map(c => c.initControllersHook(ContextsEndpointStorageInstance)));
+  console.log(ContextsEndpointStorageInstance.SPECIAL_APP_READY_MESSAGE);
+}).catch(err => {
+  console.error(err);
+  console.error('App Start Error');
+  process.exit(1);
 });
-`);
-
-const context = vm.createContext(sandbox);
-script.runInContext(context);
+process.stdin.resume();

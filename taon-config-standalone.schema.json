@@ -5343,12 +5343,35 @@
           },
           "description": "Static resurces for standalone project, that are going to be included in release dist"
         },
+        "baseContentUrl": {
+          "type": "string",
+          "description": "Base url for content (docs, md files etc.) Required if README.md has relative pathes to links"
+        },
+        "baseImagesUrl": {
+          "type": "string",
+          "description": "Base url for content (docs, md files etc.) Required if README.md has relative pathes to images"
+        },
+        "storeGeneratedAssetsInRepository": {
+          "type": "boolean",
+          "default": "false\nBy default generated assets from logo.png are not stored\nin repository"
+        },
+        "storeLocalReleaseFilesInRepository": {
+          "type": "boolean",
+          "default": "true\nBy default local release files are stored in repository"
+        },
         "dependenciesNamesForNpmLib": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "At beginning after node_modules installation taon is checking is packages are installed - if not it will throw error. Also.. this dependencies are going to be included in released npm lib as dependencies."
+          "description": "Non-isomorphic dependencies for npm lib.\n\nAt beginning after node_modules installation taon is checking is packages are installed - if not it will throw error. Also.. this dependencies are going to be included in released npm lib as dependencies."
+        },
+        "isomorphicDependenciesForNpmLib": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Same as dependenciesNamesForNpmLib but these dependencies are isomorphic (can be used in browser and node)"
         },
         "peerDependenciesNamesForNpmLib": {
           "type": "array",
@@ -5356,6 +5379,13 @@
             "type": "string"
           },
           "description": "At beginning after node_modules installation taon is checking is packages are installed - if not it will throw error. Also.. this peerDependencies are going to be included in released npm lib as peerDependencies."
+        },
+        "optionalDependenciesNamesForNpmLib": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "At beginning after node_modules installation taon is checking is packages are installed - if not it will throw error. Also.. this optionalDependencies are going to be included in released npm lib as optionalDependencies."
         },
         "singleFileBundlingPackages": {
           "type": "array",
@@ -5372,7 +5402,7 @@
               },
               "isExternalFor": {
                 "$ref": "#/definitions/Models.TaonArtifactInclude",
-                "description": "Specify for which artifacts this package is external"
+                "description": "Specify for which artifacts this package is external Example: vscode - for vscode plugin (vscode is in runtime of vscode plugin) electron - for electron apps (electron is in runtime of electron app)"
               },
               "replaceWithNothing": {
                 "$ref": "#/definitions/Models.TaonArtifactInclude",
@@ -5380,7 +5410,7 @@
               },
               "includeInBundleNodeModules": {
                 "$ref": "#/definitions/Models.TaonArtifactInclude",
-                "description": "only for native stuff that can't be minified and needs to be included in bundle. Taon will perform npm install for all packages marked with this"
+                "description": "! FOR NOW ONLY FOR: 'electron-app' and 'angular-node-app'\n\nNative stuff that can't be minified and needs to be included in bundle. Taon will perform npm install for all packages marked with this"
               }
             },
             "required": [
@@ -5418,6 +5448,8 @@
       "required": [
         "dependenciesNamesForNpmLib",
         "isCoreProject",
+        "isomorphicDependenciesForNpmLib",
+        "optionalDependenciesNamesForNpmLib",
         "packageJsonOverride",
         "peerDependenciesNamesForNpmLib",
         "shouldGenerateAutogenIndexFile",
@@ -5435,8 +5467,8 @@
         "v4",
         "v16",
         "v18",
-        "v19",
-        "v20",
+        "v21",
+        "v21",
         "v21",
         "v22"
       ]
@@ -6373,10 +6405,19 @@
         "releaseType": {
           "$ref": "#/definitions/ReleaseType",
           "description": "select release type for automatic release"
+        },
+        "taonInstanceIp": {
+          "type": "string",
+          "description": "IP address of taon instance where to release"
+        },
+        "taskName": {
+          "type": "string",
+          "description": "friendly name of item in auto release list configuration"
         }
       },
       "required": [
-        "artifactName"
+        "artifactName",
+        "taskName"
       ],
       "additionalProperties": false
     },

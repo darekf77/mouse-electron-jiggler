@@ -1,7 +1,10 @@
 {
   "type": "isomorphic-lib",
-  "version": "v19",
+  "version": "v21",
+  "dependenciesNamesForNpmLib": [],
   "appId": "com.domain.example.mouse-electron-jiggler",
+  "isomorphicDependenciesForNpmLib": [],
+  "peerDependenciesNamesForNpmLib": [],
 
   "singleFileBundlingPackages": [
     {
