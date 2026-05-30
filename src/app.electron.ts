@@ -4,7 +4,7 @@ import { path, fse } from 'tnp-core/src';
 
 import start from './app';
 import { FRONTEND_HOST_URL_ELECTRON } from './app.hosts';
-import { ENV_ELECTRON_APP_BUILD_ANGULAR_PROD } from './lib/env';
+import { ENV_ELECTRON_APP_BUILD_PROD } from './lib/env';
 
 let win: BrowserWindow | null = null;
 const args = process.argv.slice(1);
@@ -52,7 +52,7 @@ function createWindow(): BrowserWindow {
     const url = new URL(path.join('file:', __dirname, pathIndex));
     win.loadURL(url.href);
 
-    if (!ENV_ELECTRON_APP_BUILD_ANGULAR_PROD) {
+    if (!ENV_ELECTRON_APP_BUILD_PROD) {
       // Open the DevTools.
       win.webContents.openDevTools();
     }

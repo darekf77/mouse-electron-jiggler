@@ -3,9 +3,46 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run Vitest (all *.test.ts files)",
       "type": "node",
       "request": "launch",
-      "name": "Debug/Start Server",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": [
+        "run",
+        "--environment",
+        "node",
+        "--testTimeout",
+        "60000"
+      ],
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "smartStep": true
+    },
+    {
+      "name": "Run Vitest (editor active test file)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": [
+        "run",
+        "${fileBasenameNoExtension}",
+        "--environment",
+        "node",
+        "--testTimeout",
+        "60000"
+      ],
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "smartStep": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Server for app.ts",
       "program": "${workspaceFolder}/run.js",
       "args": [],
       "runtimeArgs": [
@@ -13,7 +50,7 @@
       ]
     },
     {
-      "name": "Debug/Start Electron",
+      "name": "Run Electron",
       "type": "node",
       "request": "launch",
       "protocol": "inspector",
@@ -40,7 +77,7 @@
       "port": 9222
     },
     {
-      "name": "Debug/Start Vscode Plugin",
+      "name": "Run Vscode Plugin",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
