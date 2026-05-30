@@ -36,32 +36,25 @@ export class JigglerProvier extends TaonBaseProvider {
   async jiggerStartFn(): Promise<void> {
     //#region @backendFunc
     console.log('Jiggle started in background');
-    let size: Electron.Size = undefined as any;
 
-    let twoPI: number = undefined as any;
-    let height: number = undefined as any;
-    let width: number = undefined as any;
-
-    const calculate = () => {
-      size = screen.getPrimaryDisplay().size;
-      const scale = screen.getPrimaryDisplay().scaleFactor;
-      twoPI = Math.PI * 2.0;
-      height = Math.floor(size.height * scale) / 2 - 10;
-      width = Math.floor(size.width * scale);
-    };
     while (true) {
-      calculate();
-      for (var x = 0; x < width; x++) {
-        const y = height * Math.sin((twoPI * x) / width) + height;
-        // robot.moveMouse(x, y);
-        // robot.moveMouse(x, y);
-        if (this.jigger) {
-          mouse.move([new Point(x, y)]);
-          await Utils.waitMilliseconds(4);
-        } else {
+      const display = screen.getPrimaryDisplay();
+      const { width, height } = display.size; // do NOT multiply by scaleFactor
+
+      const centerY = Math.floor(height / 2);
+      const amplitude = Math.floor(height / 2) - 20;
+      const twoPI = Math.PI * 2;
+
+      for (let x = 0; x < width; x++) {
+        if (!this.jigger) {
           await Utils.waitMilliseconds(1000);
-          calculate();
+          break;
         }
+
+        const y = centerY + amplitude * Math.sin((twoPI * x) / width);
+
+        await mouse.move([new Point(Math.round(x), Math.round(y))]);
+        await Utils.waitMilliseconds(4);
       }
     }
     //#endregion
