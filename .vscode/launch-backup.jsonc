@@ -44,7 +44,9 @@
       "request": "launch",
       "name": "Run Server for app.ts",
       "program": "${workspaceFolder}/run.js",
-      "args": [],
+      "args": [
+        "TAON_LOCAL_DEV"
+      ],
       "runtimeArgs": [
         "--preserve-symlinks"
       ]
@@ -55,7 +57,6 @@
       "request": "launch",
       "protocol": "inspector",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
       "trace": "verbose",
       "runtimeArgs": [
         "--serve",
@@ -80,7 +81,6 @@
       "name": "Run Vscode Plugin",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "${execPath}",
       "sourceMaps": true,
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",

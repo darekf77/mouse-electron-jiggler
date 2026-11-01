@@ -6,6 +6,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "overrideShortName": {
+          "type": "string"
+        },
         "type": {
           "$ref": "#/definitions/LibTypeEnum"
         },
@@ -5395,6 +5398,16 @@
           "type": "string",
           "description": "(STANDALONE) Base url for content (docs, md files etc.) Required if README.md has relative pathes to images"
         },
+        "genTsDocsInclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "what projects should be included for genrated docs"
+        },
+        "gitignoreGenDocsFiles": {
+          "type": "boolean"
+        },
         "storeGeneratedAssetsInRepository": {
           "type": "boolean",
           "description": "(STANDALONE) By default generated assets from logo.png are not stored in repository",
@@ -5419,12 +5432,12 @@
           },
           "description": "(STANDALONE) Same as dependenciesNamesForNpmLib but these dependencies are isomorphic (can be used in browser and node)"
         },
-        "devModeDependenciesForNpmLib": {
+        "watchBuildDependencies": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "(STANDALONE) If not defined: devModeDependenciesForNpmLib === isomorphicDependenciesForNpmLib if defined -> this array is begin used for dev mode isomorphic dependencies when building locally projects in watch mode `taon build:lib:watch` or normal mode `taon build:lib`"
+          "description": "(STANDALONE) If not defined: watchBuildDependencies === isomorphicDependenciesForNpmLib if defined -> this array is begin used for dev mode isomorphic dependencies when building locally projects in watch mode `taon build:lib:watch` or normal mode `taon build:lib`"
         },
         "peerDependenciesNamesForNpmLib": {
           "type": "array",
@@ -5470,7 +5483,7 @@
               },
               "includeInBundleNodeModules": {
                 "$ref": "#/definitions/Models.TaonArtifactInclude",
-                "description": "! FOR NOW ONLY FOR: 'electron-app' and 'angular-node-app'\n\nNative stuff that can't be minified and needs to be included in bundle. Taon will perform npm install for all packages marked with this"
+                "description": "! FOR NOW ONLY FOR:  - 'electron-app'  - 'angular-node-app'  - 'vscode-plugin'\n\nNative stuff that can't be minified and needs to be included in bundle. Taon will perform npm install for all packages marked with this"
               }
             },
             "required": [
@@ -5489,9 +5502,20 @@
           "description": "(STANDALONE) so I can release same npm lib with different name",
           "deprecated": "does not make sense"
         },
+        "generateTranslationsFor": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UtilsI18n.CommonLocaleCode"
+          },
+          "description": "list of languages"
+        },
         "isUsingOwnNodeModulesInsteadCoreContainer": {
           "type": "boolean",
           "description": "(STANDALONE)  Project is using own node_modules instead of core container"
+        },
+        "shouldGenerateDocsComponents": {
+          "type": "boolean",
+          "description": "(STANDALONE) generate src/lib/generated-docs for all .md fiels"
         },
         "shouldGenerateAutogenIndexFile": {
           "type": "boolean",
@@ -5500,6 +5524,10 @@
         "shouldGenerateAutogenAppRoutesFile": {
           "type": "boolean",
           "description": "(STANDALONE) generate src/app.ts routes, imports and context initializations from ./src/app/*.routes.ts (recursive)"
+        },
+        "shouldGenerateTranslationFiles": {
+          "type": "boolean",
+          "description": "Should be generated translations files for i18n"
         },
         "autoReleaseConfigAllowedItems": {
           "type": "array",
@@ -5510,18 +5538,6 @@
         }
       },
       "required": [
-        "dependenciesNamesForNpmLib",
-        "devDependenciesNamesForNpmLib",
-        "devModeDependenciesForNpmLib",
-        "isCoreProject",
-        "isomorphicDependenciesForNpmLib",
-        "optionalDependenciesNamesForNpmLib",
-        "overridePackagesOrder",
-        "packageJsonOverride",
-        "peerDependenciesNamesForNpmLib",
-        "shouldGenerateAutogenAppRoutesFile",
-        "shouldGenerateAutogenIndexFile",
-        "singleFileBundlingPackages",
         "type"
       ]
     },
@@ -6440,6 +6456,18 @@
       ],
       "description": "All possible release types for taon for MANUAL/CLOUD release"
     },
+    "UtilsI18n.CommonLocaleCode": {
+      "type": "string",
+      "enum": [
+        "pl-PL",
+        "en-US",
+        "en-GB",
+        "de-DE",
+        "fr-FR",
+        "es-ES",
+        "zh-CN"
+      ]
+    },
     "Models.TaonAutoReleaseItem": {
       "type": "object",
       "properties": {
@@ -6447,7 +6475,7 @@
           "$ref": "#/definitions/ReleaseArtifactTaon"
         },
         "envName": {
-          "$ref": "#/definitions/CoreModels.EnvironmentName",
+          "$ref": "#/definitions/UtilsEnv.EnvironmentName",
           "description": "if not proviede default  env.<artifact-name>.__.ts will be in use"
         },
         "envNumber": {
@@ -6470,6 +6498,10 @@
           "type": "string",
           "description": "Short description of auto release item"
         },
+        "workerName": {
+          "type": "string",
+          "description": "Cloudflare worker name"
+        },
         "askUserBeforeFinalAction": {
           "type": "boolean",
           "description": "Ask for confirmation before deployement to taon cloud"
@@ -6485,7 +6517,7 @@
       ],
       "additionalProperties": false
     },
-    "CoreModels.EnvironmentName": {
+    "UtilsEnv.EnvironmentName": {
       "type": "string",
       "enum": [
         "__",
@@ -6493,6 +6525,8 @@
         "dev",
         "stage",
         "prod",
+        "cloudflare",
+        "cloud",
         "test",
         "qa",
         "sandbox",
@@ -6509,10 +6543,13 @@
     "ReleaseType": {
       "type": "string",
       "enum": [
-        "manual",
+        "manual-taon",
         "local",
-        "cloud",
-        "static-pages"
+        "cloud-ci-taon",
+        "manual-static-pages",
+        "cloud-ci-static-pages",
+        "manual-cloudflare",
+        "cloud-ci-cloudflare"
       ]
     }
   }

@@ -92,7 +92,11 @@
     "**/dist-*": true,
     "**/*.rest": true,
     "src/app.auto-gen-docs.md": true,
-    "src/app.auto-gen-ver.js": true
+    "src/app.auto-gen-ver.js": true,
+    ".ai": true,
+    "databases": true,
+    "**/.ai": true,
+    "**/databases": true
   },
 
   "files.exclude": {
@@ -213,7 +217,9 @@
   "javascript.suggest.autoImports": false,
 
   "files.associations": {
-    "tsconfig.json": "json"
+    "tsconfig.json": "plaintext",
+    "**/tsconfig.json": "plaintext",
+    "**/tsconfig.*.json": "plaintext"
   },
 
   "search.followSymlinks": false
