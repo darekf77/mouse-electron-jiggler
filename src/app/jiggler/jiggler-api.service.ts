@@ -8,7 +8,7 @@ import { JigglerController } from './jiggler.controller';
 
 @Injectable()
 export class JigglerApiService extends TaonBaseAngularService {
-  protected jigglerController = this.injectController(JigglerController);
+  protected jigglerController = this.inject(JigglerController);
 
   enableToggle(): Observable<boolean> {
     return this.jigglerController.enableToggle().request!().observable.pipe(

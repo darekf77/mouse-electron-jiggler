@@ -20,7 +20,7 @@ import { JigglerProvier } from './jiggler.provider';
 export class JigglerController extends TaonBaseCrudController<Jiggler> {
   entityClassResolveFn: () => typeof Jiggler = () => Jiggler;
 
-  jigglerProvier = this.injectProvider(JigglerProvier);
+  jigglerProvier = this.inject(JigglerProvier);
 
   //#region methods & getters / hello world
   @POST()
